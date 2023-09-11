@@ -3,7 +3,7 @@ import errors from "../errors/errors.js";
 export default (passengersRepositories) => {
     return {
         create,
-        travels
+        readTravels
     }
 
     async function create({ firstName, lastName }) {
@@ -12,7 +12,12 @@ export default (passengersRepositories) => {
         passengersRepositories.create({ firstName, lastName });
     }
 
-    async function travels() {
+    async function readTravels({ name = undefined }) {
+        const reponse = await passengersRepositories.readTravels({ name });
 
+        if (reponse.length > 10) {
+            throw errors.internalServer("Too many results");
+        }
+        return reponse;
     }
 };

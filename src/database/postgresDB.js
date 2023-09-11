@@ -53,28 +53,27 @@ export default class PostgresDB {
         };
     }
 
-    async select({ columns = "*", clauses = [], join = [] }) {
-        //TODO
-        if (join.length > 0) {
-            return (await this.#pgdb.query(`
-            
-            `, [])).rows;
-        } else {
-            if (Object.keys(clauses).length > 0) {
-                return (await this.#pgdb.query(`
-                    SELECT (${columns
-                        .map(col => `"${col}"`).join(", ")})
-                    FROM "${this.#tableName}";
-                `)).rows;
-            } else {
-                return (await this.#pgdb.query(`
-                    SELECT (${columns
-                        .map(col => `"${col}"`).join(", ")})
-                    FROM "${this.#tableName}";
-                `)).rows;
-            }
-        }
+    async select({ columns = ["*"], clauses = [], joinTables = {
+        type: [], //LEFT, RIGHT ...
+        tables: [],
+        on: []
+    }, groupBy = [] }) {
 
+        const query = `
+            SELECT ${columns.join(", ")}
+            FROM ${this.#tableName}
+            ${joinTables.tables.length > 0
+                ? `${joinTables.tables.map((table, i) => `
+                    ${joinTables.type[i]} JOIN "${table}"
+                    ON ${joinTables.on[i]}
+                `).join(" ")}`
+                : ""}
+            ${clauses.length > 0
+                ? `WHERE (${clauses.join(" AND ")})`
+                : ""}
+            ${groupBy.length > 0 ? `GROUP BY (${groupBy.map(col => `"${col}"`).join(", ")})` : ""};
+        `;
+        return (await this.#pgdb.query(query)).rows
     }
 
     async find(data = {}) {

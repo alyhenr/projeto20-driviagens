@@ -27,6 +27,9 @@ export class AppErrors {
             case "badRequest":
                 this.status = httpStatus.BAD_REQUEST;
                 this.message = resource;
+            case "internalServer":
+                this.status = httpStatus.INTERNAL_SERVER_ERROR;
+                this.message = resource;
             default:
                 break;
         }
@@ -42,4 +45,5 @@ export default {
     conflict: (resource) => new AppErrors("conflict", resource),
     unprocessableEntity: (joiMessage) => new AppErrors("unprocessableEntity", joiMessage),
     badRequest: (resource) => new AppErrors("badRequest", resource),
+    internalServer: (resource) => new AppErrors("internalServer", resource),
 };

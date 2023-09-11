@@ -2,7 +2,7 @@ export default (db) => {
     return {
         find,
         create,
-        travels
+        readTravels
     }
 
     function find(data) {
@@ -18,8 +18,29 @@ export default (db) => {
         }
     }
 
-    async function travels(firstName, lastName) {
+    async function readTravels({ name }) {
+        const columnsArr = [`CONCAT("firstName", ' ', "lastName") AS passenger`, `COUNT(travels.*)::INTEGER AS travels`];
+        const clausesArr = [];
+        const joinTables = {
+            type: ["LEFT"],
+            tables: ["travels"],
+            on: ['travels."passengerId"=passengers.id']
+        };
+        const groupBy = ["firstName", "lastName"];
 
+        if (name) {
+            clausesArr.push(`
+                "firstName" ILIKE '%${name}%'
+                OR "lastName" ILIKE '%${name}%'
+            `);
+        }
+
+        return db.select({
+            columns: columnsArr,
+            clauses: clausesArr,
+            joinTables,
+            groupBy
+        })
     }
 
 }

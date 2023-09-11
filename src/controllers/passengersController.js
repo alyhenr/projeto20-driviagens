@@ -12,6 +12,9 @@ export default (passengersServices) => {
     }
 
     async function readTravels(req, res) {
-        //TODO
+        const { name } = req.query;
+
+        const travels = await passengersServices.readTravels({ name });
+        res.status(200).send(travels);
     }
 }

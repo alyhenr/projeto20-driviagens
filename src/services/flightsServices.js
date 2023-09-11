@@ -66,6 +66,11 @@ export default (flightsRepositories) => {
             }
         }
 
+        //Check for valid origin and destination before access the db
+        if (origin === destination) {
+            throw errors.badRequest("There's no flights with destination equals to its origin")
+        }
+
         return flightsRepositories.read(clauses);
     }
 };
