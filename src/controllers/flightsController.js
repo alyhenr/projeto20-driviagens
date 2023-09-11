@@ -12,6 +12,25 @@ export default (flightsService) => {
     }
 
     async function read(req, res) {
-        //TODO
+        const {
+            origin,
+            destination,
+        } = req.query;
+        const smallerDate = req.query["smaller-date"];
+        const biggerDate = req.query["bigger-date"];
+
+        const data = {
+            origin, destination, smallerDate, biggerDate
+        };
+        ["origin", "destination", "smallerDate", "biggerDate"]
+            .forEach(info => {
+                if (data[info] === undefined) {
+                    delete data[info];
+                }
+            });
+
+
+        const flights = await flightsService.read(data);
+        res.status(200).send(flights);
     }
 }

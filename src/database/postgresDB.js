@@ -1,5 +1,11 @@
 import queryValuesGenerator from "../utils/queryValuesGenerator.js";
 
+//Custom data base class to use postgres queries,
+// aiming to generalize methods used in the repositories
+// files, so that any db changes will require only
+// a new class design with the db related queries
+// and then update the dependency injection on the routes
+// files.
 export default class PostgresDB {
     #pgdb;
     #tableName;
@@ -47,7 +53,27 @@ export default class PostgresDB {
         };
     }
 
-    select(data = {}) {
+    async select({ columns = "*", clauses = [], join = [] }) {
+        //TODO
+        if (join.length > 0) {
+            return (await this.#pgdb.query(`
+            
+            `, [])).rows;
+        } else {
+            if (Object.keys(clauses).length > 0) {
+                return (await this.#pgdb.query(`
+                    SELECT (${columns
+                        .map(col => `"${col}"`).join(", ")})
+                    FROM "${this.#tableName}";
+                `)).rows;
+            } else {
+                return (await this.#pgdb.query(`
+                    SELECT (${columns
+                        .map(col => `"${col}"`).join(", ")})
+                    FROM "${this.#tableName}";
+                `)).rows;
+            }
+        }
 
     }
 
@@ -65,5 +91,10 @@ export default class PostgresDB {
             );
         `;
         return (await this.#pgdb.query(query, valuesArray)).rowCount > 0;
+    }
+
+    async customQuery(query, values) {
+
+        return (await this.#pgdb.query(query, values)).rows;
     }
 }

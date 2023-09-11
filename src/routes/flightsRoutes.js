@@ -21,6 +21,6 @@ const flightsServices = createFlightsService(flightsRepositories);
 const flightsController = createFlightsController(flightsServices);
 
 flightsRoutes.post("/flights", validateSchema(flightsSchema), flightsController.create);
-flightsRoutes.get("/flights", validateSchema(flightsSchema), flightsController.read);
+flightsRoutes.get("/flights", flightsController.read);
 
 export default flightsRoutes;

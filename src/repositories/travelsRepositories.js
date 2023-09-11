@@ -2,8 +2,8 @@ export default (db) => {
     return {
         create,
         find,
-        useAnotherTable,
-        goBackToOriginalTable,
+        findPassenger,
+        findFlight,
     }
 
     function create({ passengerId, flightId }) {
@@ -14,11 +14,19 @@ export default (db) => {
         return db.find(data);
     }
 
-    function useAnotherTable(tableName = "travels") {
-        db.useAnotherTable(tableName);
+    async function findPassenger({ id: passengerId }) {
+        db.useAnotherTable("passengers");
+
+        const response = await db.find({ id: passengerId })
+        db.goBackToOriginalTable();
+        return response;
     }
 
-    function goBackToOriginalTable() {
+    async function findFlight({ id: flightId }) {
+        db.useAnotherTable("flights");
+
+        const response = await db.find({ id: flightId })
         db.goBackToOriginalTable();
+        return response;
     }
 }

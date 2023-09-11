@@ -1,7 +1,7 @@
 import httpStatus from "http-status";
 
 export class AppErrors {
-    constructor(type, resource = "") {
+    constructor(type, resource = "resource") {
         this.status;
         this.message;
 
@@ -24,6 +24,9 @@ export class AppErrors {
                 this.status = httpStatus.UNPROCESSABLE_ENTITY;
                 this.message = resource; //Custom Joi message
                 break;
+            case "badRequest":
+                this.status = httpStatus.BAD_REQUEST;
+                this.message = resource;
             default:
                 break;
         }
@@ -38,4 +41,5 @@ export default {
     notFound: (resource) => new AppErrors("notFound", resource),
     conflict: (resource) => new AppErrors("conflict", resource),
     unprocessableEntity: (joiMessage) => new AppErrors("unprocessableEntity", joiMessage),
+    badRequest: (resource) => new AppErrors("badRequest", resource),
 };

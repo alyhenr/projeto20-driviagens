@@ -7,18 +7,16 @@ export default (travelsRepositories) => {
 
     async function create({ passengerId, flightId }) {
         //Check if passenger exists
-        travelsRepositories.useAnotherTable("passengers");
-        if (!(await travelsRepositories.find({ id: passengerId }))) {
+        if (!(await travelsRepositories.findPassenger({ id: passengerId }))) {
             throw errors.notFound("Passenger");
         }
+
         //Check if flight exists
-        travelsRepositories.useAnotherTable("flights");
-        if (!(await travelsRepositories.find({ id: flightId }))) {
+        if (!(await travelsRepositories.findFlight({ id: flightId }))) {
             throw errors.notFound("Flight");
         }
 
         //Check if passenger alreay booked this flight
-        travelsRepositories.goBackToOriginalTable();
         if (await travelsRepositories.find({
             passengerId, flightId
         })) {

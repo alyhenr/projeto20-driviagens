@@ -1,6 +1,14 @@
 import dayjs from "dayjs";
+
 import errors from "../errors/errors.js";
+
+import { queriesDateSchema } from "../schemas/flightsSchema.js";
 import formatDate from "../utils/formatDate.js";
+
+const checkDate = (date) => {
+    const { error } = queriesDateSchema.validate(date, { abortEarly: false });
+    if (error) throw errors.unprocessableEntity(error.details.map((e) => e.message));
+}
 
 export default (flightsRepositories) => {
     return {
@@ -21,21 +29,43 @@ export default (flightsRepositories) => {
             throw errors.unprocessableEntity("Date provided cannot be in the past")
         }
 
-        flightsRepositories.useAnotherTable("cities");
-
         //Check if cities exists
-        if (!(await flightsRepositories.find({ id: origin }))) {
-            throw errors.notFound("Origin");
-        } else if (!(await flightsRepositories.find({ id: destination }))) {
-            throw errors.notFound("Destination");
+        const response = await flightsRepositories.findCities({ id: [origin, destination] });
+        if (!response.found) {
+            throw errors.notFound(response.city);
         }
-
-        flightsRepositories.goBackToOriginalTable();
 
         flightsRepositories.create({ origin, destination, date });
     }
 
-    async function read() {
-        //TODO
+    async function read(clauses = {}) {
+        const {
+            origin,
+            destination,
+            smallerDate,
+            biggerDate,
+        } = clauses;
+
+        if (smallerDate && !biggerDate) {
+            throw errors.unprocessableEntity("You need to provide a bigger-date too");
+        }
+
+        if (biggerDate && !smallerDate) {
+            throw errors.unprocessableEntity("You need to provide a smaller-date too");
+        }
+
+        //If dates are provided, validate them
+        if (smallerDate && biggerDate) {
+            checkDate({ date: smallerDate });
+            checkDate({ date: biggerDate });
+            const date1 = formatDate(smallerDate);
+            const date2 = formatDate(biggerDate);
+
+            if (!dayjs(date2).isAfter(dayjs(date1))) {
+                throw errors.badRequest("The bigger-date needs to be after the smaller-date");
+            }
+        }
+
+        return flightsRepositories.read(clauses);
     }
 };
