@@ -5,8 +5,8 @@ export default (citiesService) => {
 
     async function create(req, res) {
         const { name } = req.body;
+        await citiesService.create({ cityName: name });
 
-        await citiesService.create(name);
         res.sendStatus(201);
     }
 }

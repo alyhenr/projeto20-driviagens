@@ -5,10 +5,10 @@ export default (citiesRepositories) => {
         create,
     }
 
-    async function create(name) {
-        const response = await citiesRepositories.create(name);
+    async function create({ cityName }) {
+        const response = await citiesRepositories.create({ cityName });
 
-        if (!newCity.success) {
+        if (!response.inserted) {
             throw errors.conflict("City");
         }
     }

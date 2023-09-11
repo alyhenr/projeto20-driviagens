@@ -1,7 +1,7 @@
 import httpStatus from "http-status";
 
 export class AppErrors {
-    constructor(type, resource) {
+    constructor(type, resource = "") {
         this.status;
         this.message;
 
@@ -27,6 +27,10 @@ export class AppErrors {
             default:
                 break;
         }
+    }
+
+    customMessage(message) {
+        this.message = message;
     }
 }
 

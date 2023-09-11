@@ -8,6 +8,19 @@ export default class PostgresDB {
         this.#tableName = tableName
     }
 
+    useAnotherTable(tableName) {
+        this.originalTable = this.#tableName;
+        this.#tableName = tableName;
+    }
+
+    goBackToOriginalTable() {
+        if (!this.originalTable) return;
+        if (this.#tableName == this.originalTable) return;
+
+        this.#tableName = this.originalTable
+        delete this.originalTable;
+    }
+
     async insert(data = {}) {
         const {
             columnsArray,
@@ -19,8 +32,13 @@ export default class PostgresDB {
             INSERT INTO ${this.#tableName}
             (${columnsArray.map(col => `"${col}"`).join(", ")}) VALUES
             (${protectedValues})
+            ON CONFLICT DO NOTHING;
         `, valuesArray);
-        return result.rows[0];
+
+        return {
+            inserted: result.rowCount > 0,
+            data
+        };
     }
 
     select(data = {}) {

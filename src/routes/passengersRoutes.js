@@ -21,6 +21,6 @@ const passengersServices = createPassengersService(passengersRepositories);
 const passengersController = createPassengersController(passengersServices);
 
 passengersRoutes.post("/passengers", validateSchema(passengerSchema), passengersController.create);
-passengersRoutes.get("/passengers/travels", passengersController.travels);
+passengersRoutes.get("/passengers/travels", passengersController.readTravels);
 
 export default passengersRoutes;

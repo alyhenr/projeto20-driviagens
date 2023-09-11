@@ -1,7 +1,7 @@
 export default (passengersServices) => {
     return {
         create,
-        travels
+        readTravels
     }
 
     async function create(req, res) {
@@ -11,7 +11,7 @@ export default (passengersServices) => {
         res.sendStatus(201);
     }
 
-    async function travels(req, res) {
+    async function readTravels(req, res) {
         //TODO
     }
 }
