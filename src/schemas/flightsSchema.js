@@ -4,8 +4,8 @@ import dayjs from "dayjs";
 import formatDate from "../utils/formatDate.js";
 
 export default Joi.object({
-    origin: Joi.number().required(),
-    destination: Joi.number().required(),
+    origin: Joi.number().positive().required(),
+    destination: Joi.number().positive().required(),
     date: Joi.string().custom((date, helpers) => {
         const formattedDate = formatDate(date);
 

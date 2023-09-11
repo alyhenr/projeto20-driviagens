@@ -3,14 +3,19 @@ import queryValuesGenerator from "../utils/queryValuesGenerator.js";
 export default class PostgresDB {
     #pgdb;
     #tableName;
+    #usingAnotherTable = false;
     constructor(pgdb, tableName) {
         this.#pgdb = pgdb;
         this.#tableName = tableName
     }
 
     useAnotherTable(tableName) {
-        this.originalTable = this.#tableName;
+        if (!this.#usingAnotherTable) {
+            this.originalTable = this.#tableName;
+        }
+
         this.#tableName = tableName;
+        this.#usingAnotherTable = true;
     }
 
     goBackToOriginalTable() {
@@ -18,6 +23,7 @@ export default class PostgresDB {
         if (this.#tableName == this.originalTable) return;
 
         this.#tableName = this.originalTable
+        this.#usingAnotherTable = false;
         delete this.originalTable;
     }
 
