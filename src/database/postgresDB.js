@@ -93,7 +93,6 @@ export default class PostgresDB {
     }
 
     async customQuery(query, values) {
-
         return (await this.#pgdb.query(query, values)).rows;
     }
 }

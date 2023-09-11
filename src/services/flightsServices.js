@@ -35,7 +35,7 @@ export default (flightsRepositories) => {
             throw errors.notFound(response.city);
         }
 
-        flightsRepositories.create({ origin, destination, date });
+        flightsRepositories.create({ origin, destination, date: formattedDate });
     }
 
     async function read(clauses = {}) {
@@ -67,7 +67,7 @@ export default (flightsRepositories) => {
         }
 
         //Check for valid origin and destination before access the db
-        if (origin === destination) {
+        if ((origin && destination) && (origin === destination)) {
             throw errors.badRequest("There's no flights with destination equals to its origin")
         }
 

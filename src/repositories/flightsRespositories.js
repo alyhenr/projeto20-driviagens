@@ -16,7 +16,7 @@ export default (db) => {
 
     async function read(clauses = {}) {
         let baseQuery = `
-            SELECT TO_CHAR(f.date::date, 'dd-mm-yyyy') as date, c1.name as origin, c2.name as destination
+            SELECT f.id as id, TO_CHAR(f.date::date, 'dd-mm-yyyy') as date, c1.name as origin, c2.name as destination
             from flights f
             JOIN cities c1 ON c1.id = f.origin
             JOIN cities c2 ON c2.id = f.destination
@@ -37,20 +37,21 @@ export default (db) => {
             }
             if (clauses.origin) {
                 baseQuery += `
-                    ${count > 1 ? "AND" : ""} c1.name = $${count}
+                    ${count > 1 ? "AND" : ""} c1.name ILIKE $${count}
                 `;
-                values.push(clauses.origin);
+                values.push(`%${clauses.origin}%`);
                 count++;
             }
             if (clauses.destination) {
                 baseQuery += `
-                    ${count > 1 ? "AND" : ""} c2.name = $${count}
+                    ${count > 1 ? "AND" : ""} c2.name ILIKE $${count}
                 `;
-                values.push(clauses.destination)
+                values.push(`%${clauses.destination}%`)
             }
 
-            baseQuery += `) ORDER BY date DESC;`;
+            baseQuery += `) `;
         }
+        baseQuery += `ORDER BY f.date;`;
 
         return (await db.customQuery(baseQuery, values));
     }
